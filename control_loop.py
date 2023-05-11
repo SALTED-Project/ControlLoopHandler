@@ -17,7 +17,7 @@ auth_client_secret = config.get('mqtt', 'AUTH_CLIENT_SECRET')
 
 
 class ControlLoopHandler():
-    """Handles parameter changes through MQTT requests."""
+    """Handles parameter changes through MQTT messages."""
     
     def __init__(self, det_component_id: str, starting_params: dict):
         """Initializes ControlLoopHandler.
@@ -79,7 +79,7 @@ class ControlLoopHandler():
         # Apply reconfiguration
         response = dict()
         for name, value in params.items():
-            if name not in list(self.__params.keys()): continue
+            if name not in self.__params.keys(): continue
             self.__params[name] = value
             response[name] = value
         self.__client.publish(app_id, json.dumps(response))
@@ -112,8 +112,8 @@ class ControlLoopHandler():
 
     def stop(self) -> None:
         """Stop listening for parameter change requests."""
-        self.__client.disconnect()
         self.__client.loop_stop()
+        self.__client.disconnect()
 
     def get_param(self, param_name: str):
         """Get current value of a parameter.
