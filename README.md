@@ -1,37 +1,48 @@
-# SALTED - Control Loop Handler
+# SALTED - Control Loop Handler (pip installable)
 
 ControlLoopHandler is a Python class intended to ease the development of DET components that use the control loop mechanism envisioned in SALTED. It is aimed at partners working on WP2 and WP4 activities, but may also be of use to external users developing DET components.
 
-This repository comprises 4 files:
-- *control_loop.py* is the main script. It is meant to be imported from a DET component and used directly.
-- *control_loop.conf* is a configuration file required for the main script to know the locations of the MQTT broker and the token endpoint, as well as the credentials to obtain a valid token from the latter.
-- *requirements.txt* is the standard file listing the PyPI packages to be installed.
-- *README.md* is this documentation.
+
 
 ## Installation
 
-1. Install the required packages in your Python 3 environment:
-```bash
-pip install -r requirements.txt
-```
-2. Move *control_loop.py* and *control_loop.conf* to the working directory of your DET component.
+Install as package in your Python 3 environment:
 
-3. Update *control_loop.conf* with your credentials.
+```bash
+pip install git+https://github.com/SALTED-Project/ControlLoopHandler.git@packaged
+```
 
 ## Usage
 
-First, import the ControlLoopHandler class from your DET component and instantiate an object. It has to be initialized with an identifier and a set of parameters to be modified through the control loop.
+Full Examples for App and DET implementations can be found under ``/examples``.
+Make sure to install all additional python dependencies beforehand:
+
+```bash
+pip install git+https://github.com/SALTED-Project/TokenHandler.git
+pip install paho-mqtt
+
+```
+
+
+### DET side
+
+First, instantiate the ControlLoopHandler.
 
 ```python
-from control_loop import ControlLoopHandler
+import controlloophandler
 
-det_id = "example_id"
-params = {
-    "example_param_1": 20,
-    "example_param_2": "abc"
-}
-
-det_clh = ControlLoopHandler(det_id, params)
+det_clh = controlloophandler.handler.TokenHandler(
+    det_component_id= "example_id", 
+    starting_params= {
+        "example_param_1": 20,
+        "example_param_2": "abc"
+    }, 
+    token_endpoint = "https://auth.salted-project.eu/realms/SALTED/protocol/openid-connect/token",
+    mqtt_endpoint = "control-broker.salted-project.eu",
+    mqtt_port = 443,
+    auth_client_id = <your keycloak client ID>,
+    auth_client_secret = <your keycloak client secret>
+)
 ```
 
 Calling the *start* method will connect to the MQTT broker and subscribe to the corresponding topic (*[det_id]/#*).
@@ -54,7 +65,7 @@ det_clh.stop()
 
 Methods *update_token*, *set_param* and *add_param* are also available for your needs.
 
-## Application side
+### App side
 
 Applications can send requests to the DET components using the control loop mechanism. To do so, they can send an MQTT message to the *[det_id]/[app_id]* topic and the DET component will send an acknowledgement message to the *[app_id]* topic. As an example, using Python:
 
