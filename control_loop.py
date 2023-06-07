@@ -95,6 +95,8 @@ class ControlLoopHandler():
         res = requests.post(token_endpoint, headers=self.__headers, data=self.__data)
         res_dict = json.loads(res.text)
         res.close()
+        if "access_token" not in res_dict:
+            raise RuntimeError("Access token could not be obtained. Credentials might be invalid.")
         self.__token = res_dict["access_token"]
         self.__token_expiry_time = datetime.timestamp(datetime.now()) + res_dict["expires_in"] - 10
 
