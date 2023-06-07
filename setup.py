@@ -9,7 +9,7 @@ setup(
     version=controlloophandler.__version__,    
     description='Control Loop handler for control loop mechanism within SALTED.',
     url='https://github.com/SALTED-Project/ControlLoopHandler',
-    author='',
+    author='Víctor González',
     author_email='',
     license='',
     packages=['controlloophandler'],

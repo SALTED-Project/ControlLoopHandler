@@ -1,5 +1,4 @@
 from controlloophandler.handler import ControlLoopHandler
-import json
 import time
 
 def run():
@@ -20,7 +19,6 @@ def run():
     
     # start() is non blocking, thats why a waiting period is needed to wait for requests, since the program would otherwise quit due to no other tasks
     time.sleep(120)
-
     
     new_value = det_clh.get_param("example_param_1")
     print(new_value)

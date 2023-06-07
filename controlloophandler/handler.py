@@ -1,13 +1,7 @@
-import os
 import json
 import requests
-import configparser
 import paho.mqtt.client as mqtt
 from datetime import datetime
-
-# Config variables
-PROGRAM_PATH = os.path.dirname(os.path.realpath(__file__))
-
 
 class ControlLoopHandler():
     """Handles parameter changes through MQTT messages."""
@@ -94,6 +88,8 @@ class ControlLoopHandler():
         res = requests.post(self.__token_endpoint, headers=self.__headers, data=self.__data)
         res_dict = json.loads(res.text)
         res.close()
+        if "access_token" not in res_dict:
+            raise RuntimeError("Access token could not be obtained. Credentials might be invalid.")
         self.__token = res_dict["access_token"]
         self.__token_expiry_time = datetime.timestamp(datetime.now()) + res_dict["expires_in"] - 10
 
